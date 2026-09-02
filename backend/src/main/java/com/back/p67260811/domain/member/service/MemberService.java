@@ -5,6 +5,7 @@ import com.back.p67260811.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
 import java.util.Optional;
 
 @Service
@@ -24,5 +25,9 @@ public class MemberService {
 
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
+    }
+
+    public Optional<Member> findByApiKey(String apiKey) {
+        return memberRepository.findByApiKey(apiKey);
     }
 }

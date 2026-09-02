@@ -1,5 +1,6 @@
 package com.back.p67260811.domain.post.post.controller;
 
+import com.back.p67260811.domain.member.repository.MemberRepository;
 import com.back.p67260811.domain.post.post.entity.Post;
 import com.back.p67260811.domain.post.post.repository.PostRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -30,6 +31,9 @@ public class ApiV1PostControllerTest {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     @DisplayName("글 다건 조회")
@@ -68,7 +72,7 @@ public class ApiV1PostControllerTest {
 
         ResultActions resultActions = mvc
                 .perform(
-                        post("/api/v1/posts")
+                        post("/api/v1/posts?apiKey=3c6a9ca2-3a43-4dfd-b14f-262808466399")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                         {
