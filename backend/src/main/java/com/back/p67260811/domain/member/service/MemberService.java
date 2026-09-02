@@ -2,11 +2,13 @@ package com.back.p67260811.domain.member.service;
 
 import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.member.repository.MemberRepository;
+import com.back.p67260811.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.swing.*;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,16 @@ public class MemberService {
 
     public Member join(String username, String password, String nickname) {
         Member member = new Member(username, password, nickname);
+        return memberRepository.save(member);
+    }
+
+    // baseInitdata
+    public Member join(String username, String password, String nickname, String apiKey) {
+        if(apiKey == null) {
+            apiKey = UUID.randomUUID().toString();
+        }
+
+        Member member = new Member(username, password, nickname, apiKey);
         return memberRepository.save(member);
     }
 

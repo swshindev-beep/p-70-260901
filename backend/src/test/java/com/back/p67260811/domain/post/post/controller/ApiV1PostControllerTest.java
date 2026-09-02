@@ -72,8 +72,9 @@ public class ApiV1PostControllerTest {
 
         ResultActions resultActions = mvc
                 .perform(
-                        post("/api/v1/posts?apiKey=3c6a9ca2-3a43-4dfd-b14f-262808466399")
+                        post("/api/v1/posts")
                                 .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer user1")
                                 .content("""
                                         {
                                             "title": "%s",
