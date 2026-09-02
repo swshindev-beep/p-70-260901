@@ -13,7 +13,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class MemberService {
-
     private final MemberRepository memberRepository;
 
     public long count() {
@@ -21,12 +20,14 @@ public class MemberService {
     }
 
     public Member join(String username, String password, String nickname) {
-        Member member = new Member(username, password, nickname);
-        return memberRepository.save(member);
+        return join(username, password, nickname, null);
     }
 
-    // baseInitdata
     public Member join(String username, String password, String nickname, String apiKey) {
+        if (memberRepository.findByUsername(username).isPresent()) {
+            throw new ServiceException("409-1", "이미 사용중인 아이디입니다.");
+        }
+        
         if(apiKey == null) {
             apiKey = UUID.randomUUID().toString();
         }
