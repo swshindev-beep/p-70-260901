@@ -6,18 +6,23 @@ import com.back.p67260811.domain.post.post.dto.PostDto;
 import com.back.p67260811.domain.post.post.entity.Post;
 import com.back.p67260811.domain.post.post.service.PostService;
 import com.back.p67260811.global.dto.RsData;
-import com.back.p67260811.global.exception.ServiceException;
 import com.back.p67260811.global.rq.Rq;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,91 +38,59 @@ public class ApiV1PostController {
     public List<PostDto> list() {
         List<Post> postList = postService.findAll();
 
-        List<PostDto> postDtoList = postList.stream()
-                .map(PostDto::new)
-                .toList();
+        List<PostDto> postDtoList = postList.stream().map(PostDto::new).toList();
 
         return postDtoList;
     }
 
     @GetMapping("/{id}")
-    public PostDto detail(
-            @PathVariable int id
-    ) {
+    public PostDto detail(@PathVariable int id) {
 
         Post post = postService.findById(id).get();
-
 
         return new PostDto(post);
     }
 
 
     record PostWriteReqBody(
-            @Size(min = 2, max = 10, message = "제목은 2글자 이상 10글자 이하로 작성해주세요.")
-            @NotBlank(message = "제목을 입력해주세요.")
-            String title,
+            @Size(min = 2, max = 10, message = "제목은 2글자 이상 10글자 이하로 작성해주세요.") @NotBlank(message = "제목을 입력해주세요.") String title,
 
-            @Size(min = 2, max = 10, message = "내용은 2글자 이상 10글자 이하로 작성해주세요.")
-            @NotBlank(message = "내용을 입력해주세요.")
-            String content
-    ) {
+            @Size(min = 2, max = 10, message = "내용은 2글자 이상 10글자 이하로 작성해주세요.") @NotBlank(message = "내용을 입력해주세요.") String content) {
     }
 
     @PostMapping
     @Transactional
-    public RsData<PostDto> write(
-            @Valid @RequestBody PostWriteReqBody reqBody
-    ) {
+    public RsData<PostDto> write(@Valid @RequestBody PostWriteReqBody reqBody) {
         Member actor = rq.getActor();
         Post post = postService.write(actor, reqBody.title, reqBody.content);
 
-        return new RsData<>(
-                "201-1",
-                "%d번 글이 성공적으로 등록되었습니다".formatted(post.getId()),
-                new PostDto(post)
-        );
+        return new RsData<>("201-1", "%d번 글이 성공적으로 등록되었습니다".formatted(post.getId()), new PostDto(post));
     }
 
 
     record PostModifyReqBody(
-            @Size(min = 2, max = 10, message = "제목은 2글자 이상 10글자 이하로 작성해주세요.")
-            @NotBlank(message = "제목을 입력해주세요.")
-            String title,
-            @Size(min = 2, message = "내용은 2글자 이상 작성해주세요.")
-            @NotBlank(message = "내용을 입력해주세요.")
-            String content
-    ) {
+            @Size(min = 2, max = 10, message = "제목은 2글자 이상 10글자 이하로 작성해주세요.") @NotBlank(message = "제목을 입력해주세요.") String title,
+            @Size(min = 2, max = 10, message = "내용은 2글자 이상 작성해주세요.") @NotBlank(message = "내용을 입력해주세요.") String content) {
     }
 
     @PatchMapping("/{id}")
     @Transactional
-    public RsData<Void> modify(
-            @PathVariable int id,
-            @Valid @RequestBody PostModifyReqBody reqBody
-    ) {
+    public RsData<Void> modify(@PathVariable int id, @Valid @RequestBody PostModifyReqBody reqBody) {
         Member actor = rq.getActor();
         Post post = postService.findById(id).get();
         post.checkActorModify(actor);
         postService.modify(post, reqBody.title, reqBody.content);
 
-        return new RsData<>(
-                "200-1",
-                "%d번 게시물이 수정되었습니다.".formatted(id)
-        );
+        return new RsData<>("200-1", "%d번 게시물이 수정되었습니다.".formatted(id));
     }
 
     @DeleteMapping("/{id}")
-    public RsData<Void> delete(
-            @PathVariable int id
-    ) {
+    public RsData<Void> delete(@PathVariable int id) {
         Member actor = rq.getActor();
         Post post = postService.findById(id).get();
         post.checkActorDelete(actor);
         postService.delete(id);
 
-        return new RsData<>(
-                "200-1",
-                "%d번 게시물이 삭제되었습니다.".formatted(id)
-        );
+        return new RsData<>("200-1", "%d번 게시물이 삭제되었습니다.".formatted(id));
     }
 }

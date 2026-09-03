@@ -3,12 +3,10 @@ package com.back.p67260811.domain.member.service;
 import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.member.repository.MemberRepository;
 import com.back.p67260811.global.exception.ServiceException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import javax.swing.*;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +25,8 @@ public class MemberService {
         if (memberRepository.findByUsername(username).isPresent()) {
             throw new ServiceException("409-1", "이미 사용중인 아이디입니다.");
         }
-        
-        if(apiKey == null) {
+
+        if (apiKey == null) {
             apiKey = UUID.randomUUID().toString();
         }
 

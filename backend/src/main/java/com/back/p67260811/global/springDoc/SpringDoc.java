@@ -10,28 +10,17 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(info = @Info(title = "API 서버", version = "beta", description = "API 서버 문서입니다."))
-@SecurityScheme(
-        name = "bearerAuth",
-        type = SecuritySchemeType.HTTP,
-        bearerFormat = "JWT",
-        scheme = "bearer"
-)
+@SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
 public class SpringDoc {
 
     @Bean
     public GroupedOpenApi groupController() {
-        return GroupedOpenApi.builder()
-                .group("home")
-                .pathsToExclude("/api/**")
-                .build();
+        return GroupedOpenApi.builder().group("home").pathsToExclude("/api/**").build();
     }
 
     @Bean
     public GroupedOpenApi groupApiV1() {
-        return GroupedOpenApi.builder()
-                .group("apiV1")
-                .pathsToMatch("/api/v1/**")
-                .build();
+        return GroupedOpenApi.builder().group("apiV1").pathsToMatch("/api/v1/**").build();
     }
 
 }
