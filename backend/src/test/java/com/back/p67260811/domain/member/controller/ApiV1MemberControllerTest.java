@@ -1,8 +1,15 @@
 package com.back.p67260811.domain.member.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.member.repository.MemberRepository;
-
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,11 +21,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -64,7 +66,7 @@ public class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.data.memberDto.id").value(6))
                 .andExpect(jsonPath("$.data.memberDto.createDate").exists())
                 .andExpect(jsonPath("$.data.memberDto.modifyDate").exists())
-                .andExpect(jsonPath("$.data.memberDto.name").value(username));
+                .andExpect(jsonPath("$.data.memberDto.username").value(username));
     }
 
     @Test
@@ -128,10 +130,11 @@ public class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("%s님 반갑습니다!".formatted(member.getNickname())))
                 .andExpect(jsonPath("$.data.apiKey").exists())
+                .andExpect(jsonPath("$.data.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.data.memberDto.id").value(member.getId()))
                 .andExpect(jsonPath("$.data.memberDto.createDate").exists())
                 .andExpect(jsonPath("$.data.memberDto.modifyDate").exists())
-                .andExpect(jsonPath("$.data.memberDto.name").value(member.getUsername()));
+                .andExpect(jsonPath("$.data.memberDto.username").value(member.getUsername()));
 
         resultActions.andExpect(
                 result -> {
@@ -143,9 +146,16 @@ public class ApiV1MemberControllerTest {
                     assertThat(apiKeyCookie.getDomain()).isEqualTo("localhost");
                     assertThat(apiKeyCookie.isHttpOnly()).isEqualTo(true);
 
-                    if(apiKeyCookie != null) {
+                    if (apiKeyCookie != null) {
                         assertThat(apiKeyCookie.getValue()).isNotBlank();
                     }
+
+                    Cookie accessTokenCookie = result.getResponse().getCookie("accessToken");
+                    assertThat(accessTokenCookie).isNotNull();
+
+                    assertThat(accessTokenCookie.getPath()).isEqualTo("/");
+                    assertThat(accessTokenCookie.getDomain()).isEqualTo("localhost");
+                    assertThat(accessTokenCookie.isHttpOnly()).isEqualTo(true);
                 }
         );
     }

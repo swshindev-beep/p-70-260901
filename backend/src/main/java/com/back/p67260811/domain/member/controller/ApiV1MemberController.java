@@ -2,7 +2,6 @@ package com.back.p67260811.domain.member.controller;
 
 import com.back.p67260811.domain.member.dto.MemberDto;
 import com.back.p67260811.domain.member.entity.Member;
-import com.back.p67260811.domain.member.service.AuthTokenService;
 import com.back.p67260811.domain.member.service.MemberService;
 import com.back.p67260811.global.dto.RsData;
 import com.back.p67260811.global.exception.ServiceException;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiV1MemberController {
 
     private final MemberService memberService;
-    private final AuthTokenService authTokenService;
     private final Rq rq;
 
     record JoinReqBody(@NotBlank @Size(min = 2, max = 30) String username,
@@ -52,7 +50,7 @@ public class ApiV1MemberController {
                         @NotBlank @Size(min = 2, max = 30) String password) {
     }
 
-    record LoginResBody(MemberDto memberDto, String apiKey) {
+    record LoginResBody(MemberDto memberDto, String apiKey, String accessToken) {
     }
 
     @PostMapping("/login")
@@ -67,13 +65,16 @@ public class ApiV1MemberController {
             throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
         }
 
+        // 5. accessToken
+        String accessToken = memberService.genAccessToken(actor);
+
         // 4. apiKey 쿠키 생성하고 응답에 포함해서 전송
         rq.addCookie("apiKey", actor.getApiKey());
-        rq.addCookie("accessToken", authTokenService.genAccessToken(actor));
+        rq.addCookie("accessToken", memberService.genAccessToken(actor));
 
         // 3. 비밀번호가 맞으면 인증데이터(apiKey) 제공
         return new RsData("200-1", "%s님 반갑습니다!".formatted(actor.getNickname()),
-                new LoginResBody(new MemberDto(actor), actor.getApiKey()));
+                new LoginResBody(new MemberDto(actor), actor.getApiKey(), accessToken));
     }
 
     @DeleteMapping("/logout")

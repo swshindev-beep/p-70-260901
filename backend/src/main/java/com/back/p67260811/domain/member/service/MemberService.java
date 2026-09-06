@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final AuthTokenService authTokenService;
 
     public long count() {
         return memberRepository.count();
@@ -42,7 +43,7 @@ public class MemberService {
         return memberRepository.findByApiKey(apiKey);
     }
 
-//    public String genAccessToken() {
-//
-//    }
+    public String genAccessToken(Member member) {
+        return authTokenService.genAccessToken(member);
+    }
 }
