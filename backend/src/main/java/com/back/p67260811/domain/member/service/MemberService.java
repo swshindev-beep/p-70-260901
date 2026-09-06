@@ -3,6 +3,7 @@ package com.back.p67260811.domain.member.service;
 import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.member.repository.MemberRepository;
 import com.back.p67260811.global.exception.ServiceException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -45,5 +46,13 @@ public class MemberService {
 
     public String genAccessToken(Member member) {
         return authTokenService.genAccessToken(member);
+    }
+
+    public Map<String, Object> payloadOrNull(String accessToken) {
+        return authTokenService.payloadOrNull(accessToken);
+    }
+
+    public Optional<Member> findById(int id) {
+        return memberRepository.findById(id);
     }
 }
