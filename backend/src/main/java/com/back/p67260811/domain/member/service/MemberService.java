@@ -41,4 +41,8 @@ public class MemberService {
     public Optional<Member> findByApiKey(String apiKey) {
         return memberRepository.findByApiKey(apiKey);
     }
+
+//    public String genAccessToken() {
+//
+//    }
 }

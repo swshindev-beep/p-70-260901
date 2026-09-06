@@ -34,6 +34,13 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testAnnotationProcessor("org.projectlombok:lombok")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0")
+    implementation("io.jsonwebtoken:jjwt-api:0.13.0")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
+    testImplementation("io.jsonwebtoken:jjwt-api:0.13.0")
+    testRuntimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
+    testRuntimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<Test> {
