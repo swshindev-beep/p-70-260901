@@ -88,7 +88,8 @@ public class ApiV1MemberController {
     @GetMapping("/me")
     public RsData<MemberDto> me() {
         Member actor = rq.getActor();
+        Member realActor = memberService.findById(actor.getId()).get();
 
-        return new RsData("200-1", "OK", new MemberDto(actor));
+        return new RsData("200-1", "OK", new MemberDto(realActor));
     }
 }

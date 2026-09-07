@@ -16,7 +16,7 @@ class AuthTokenService {
     String genAccessToken(Member member) {
 
         return Ut.jwt.toString(secretPattern, expireSeconds,
-                Map.of("id", member.getId(), "username", member.getUsername()));
+                Map.of("id", member.getId(), "username", member.getUsername(), "nickname", member.getNickname()));
     }
 
     Map<String, Object> payloadOrNull(String jwt) {
@@ -28,7 +28,8 @@ class AuthTokenService {
 
         int id = (int) payload.get("id");
         String username = (String) payload.get("username");
+        String nickname = (String) payload.get("nickname");
 
-        return Map.of("id", id, "username", username);
+        return Map.of("id", id, "username", username, "nickname", nickname);
     }
 }
