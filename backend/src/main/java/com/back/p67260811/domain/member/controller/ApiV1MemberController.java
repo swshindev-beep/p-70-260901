@@ -88,7 +88,8 @@ public class ApiV1MemberController {
     @GetMapping("/me")
     public RsData<MemberDto> me() {
         Member actor = rq.getActor();
-        Member realActor = memberService.findById(actor.getId()).get();
+        Member realActor = memberService.findById(actor.getId())
+                .orElseThrow(() -> new ServiceException("404-1", "존재하지 않는 회원입니다."));
 
         return new RsData("200-1", "OK", new MemberDto(realActor));
     }
