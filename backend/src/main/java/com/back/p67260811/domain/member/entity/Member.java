@@ -3,10 +3,9 @@ package com.back.p67260811.domain.member.entity;
 import com.back.p67260811.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
@@ -18,7 +17,7 @@ public class Member extends BaseEntity {
     private String password;
     private String nickname;
     @Column(unique = true)
-    private String apiKey;
+    private String apiKey; // 리프레시 토큰 역할
 
     public Member(String username, String password, String nickname) {
         this.username = username;
