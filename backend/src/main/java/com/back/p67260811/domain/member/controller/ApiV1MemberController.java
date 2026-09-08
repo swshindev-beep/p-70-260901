@@ -61,9 +61,7 @@ public class ApiV1MemberController {
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 회원입니다."));
 
         // 2. 존재하면 비밀번호 체크
-        if (!actor.getPassword().equals((reqBody.password))) {
-            throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
-        }
+        memberService.checkPassword(reqBody.password, actor.getPassword());
 
         // 5. accessToken
         String accessToken = memberService.genAccessToken(actor);

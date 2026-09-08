@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final AuthTokenService authTokenService;
+    private final PasswordEncoder passwordEncoder;
 
     public long count() {
         return memberRepository.count();
@@ -33,7 +35,7 @@ public class MemberService {
             apiKey = UUID.randomUUID().toString();
         }
 
-        Member member = new Member(username, password, nickname, apiKey);
+        Member member = new Member(username, passwordEncoder.encode(password), nickname, apiKey);
         return memberRepository.save(member);
     }
 
@@ -59,5 +61,11 @@ public class MemberService {
 
     public List<Member> findAll() {
         return memberRepository.findAll();
+    }
+
+    public void checkPassword(String inputPassword, String rawPassword) {
+        if (!passwordEncoder.matches(inputPassword, rawPassword)) {
+            throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
+        }
     }
 }
