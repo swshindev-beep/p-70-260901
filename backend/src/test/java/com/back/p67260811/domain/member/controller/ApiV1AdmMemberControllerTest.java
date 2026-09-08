@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.member.repository.MemberRepository;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +35,12 @@ public class ApiV1AdmMemberControllerTest {
     @Test
     @DisplayName("회원 다건 조회")
     void t1() throws Exception {
+        Member actor = memberRepository.findByUsername("admin").get();
 
         ResultActions resultActions = mvc
                 .perform(
                         get("/api/v1/adm/members")
+                                .cookie(new Cookie("apiKey", actor.getApiKey()))
                 )
                 .andDo(print());
 
@@ -53,18 +57,23 @@ public class ApiV1AdmMemberControllerTest {
                 .andExpect(jsonPath("$[0].modifyDate").exists())
                 .andExpect(jsonPath("$[0].nickname").value("시스템"))
                 .andExpect(jsonPath("$[0].username").value("system"));
+    }
 
-        // 하나 또는 2개 정도만 검증
+    @Test
+    @DisplayName("회원 다건 조회, 권한이 없는 경우")
+    void t2() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/adm/members")
+                                .cookie(new Cookie("apiKey", "user1"))
+                )
+                .andDo(print());
 
-//        for(int i = 0; i < posts.size(); i++) {
-//            Post post = posts.get(i);
-//
-//            resultActions
-//                    .andExpect(jsonPath("$[%d].id".formatted(i)).value(post.getId()))
-//                    .andExpect(jsonPath("$[%d].createDate".formatted(i)).value(matchesPattern(post.getCreateDate().toString().replaceAll("0+$", "") + ".*")))
-//                    .andExpect(jsonPath("$[%d].modifyDate".formatted(i)).value(matchesPattern(post.getModifyDate().toString().replaceAll("0+$", "") + ".*")))
-//                    .andExpect(jsonPath("$[%d].title".formatted(i)).value(post.getTitle()))
-//                    .andExpect(jsonPath("$[%d].content".formatted(i)).value(post.getContent()));
-//        }
+        resultActions
+                .andExpect(handler().handlerType(ApiV1AdmMemberController.class))
+                .andExpect(handler().methodName("getItems"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.resultCode").value("403-1"))
+                .andExpect(jsonPath("$.msg").value("권한이 없습니다."));
     }
 }
