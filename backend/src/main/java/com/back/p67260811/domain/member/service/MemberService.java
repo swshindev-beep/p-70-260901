@@ -3,6 +3,7 @@ package com.back.p67260811.domain.member.service;
 import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.member.repository.MemberRepository;
 import com.back.p67260811.global.exception.ServiceException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,5 +55,9 @@ public class MemberService {
 
     public Optional<Member> findById(int id) {
         return memberRepository.findById(id);
+    }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
     }
 }
