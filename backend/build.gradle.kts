@@ -41,6 +41,8 @@ dependencies {
     testRuntimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
     testRuntimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.withType<Test> {
