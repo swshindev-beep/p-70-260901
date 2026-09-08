@@ -25,8 +25,11 @@ public class ApiV1AdmMemberController {
     @Transactional(readOnly = true)
     @Operation(summary = "회원 다건 조회")
     public List<MemberWithUsernameDto> getItems() {
+
+        // 1. 인증
         Member actor = rq.getActor();
 
+        // 2. 인가
         if (!actor.isAdmin()) {
             throw new ServiceException("403-1", "권한이 없습니다.");
         }
