@@ -1,8 +1,6 @@
 package com.back.p67260811.domain.post.post.controller;
 
-import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.post.post.service.PostService;
-import com.back.p67260811.global.exception.ServiceException;
 import com.back.p67260811.global.rq.Rq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -31,14 +29,6 @@ public class ApiV1AdmPostController {
     @Transactional(readOnly = true)
     @Operation(summary = "글 개수 조회")
     public CountResBody count() {
-
-        // 1. 인증
-        Member actor = rq.getActor();
-
-        // 2. 인가
-        if (!actor.isAdmin()) {
-            throw new ServiceException("403-1", "권한이 없습니다");
-        }
 
         return new CountResBody(postService.count());
     }

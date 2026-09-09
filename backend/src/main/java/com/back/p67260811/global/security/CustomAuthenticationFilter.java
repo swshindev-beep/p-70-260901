@@ -2,6 +2,7 @@ package com.back.p67260811.global.security;
 
 import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.member.service.MemberService;
+import com.back.p67260811.global.dto.RsData;
 import com.back.p67260811.global.exception.ServiceException;
 import com.back.p67260811.global.rq.Rq;
 import jakarta.servlet.FilterChain;
@@ -12,6 +13,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,6 +29,28 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        try {
+            authenticate(request, response, filterChain);
+        } catch (ServiceException e) {
+
+            RsData rsData = e.getRsData();
+            response.setContentType("application/json; charset=UTF-8");
+            response.setStatus(rsData.getStatusCode());
+            response.getWriter().write("""
+                    {
+                        "resultCode": "%s",
+                        "msg": "%s"
+                    }
+                    """.formatted(rsData.getResultCode(), rsData.getMsg()));
+
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+
+    private void authenticate(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         if (!request.getRequestURI().startsWith("/api/")) {
             filterChain.doFilter(request, response);
@@ -86,6 +114,22 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             rq.addCookie("accessToken", newAccessToken);
             rq.setHeader("accessToken", newAccessToken);
         }
+
+        UserDetails user = new User(
+                member.getUsername(),
+                "",
+                List.of()
+        );
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user,
+                user.getPassword(),
+                user.getAuthorities()
+        );
+
+        SecurityContextHolder
+                .getContext()
+                .setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }
