@@ -37,7 +37,7 @@ public class ApiV1MemberController {
     record JoinResBody(MemberDto memberDto) {
     }
 
-    @PostMapping()
+    @PostMapping("/join")
     public RsData<MemberDto> join(@RequestBody @Valid JoinReqBody reqBody) {
         Member member = memberService.join(reqBody.username, reqBody.password, reqBody.nickname);
 

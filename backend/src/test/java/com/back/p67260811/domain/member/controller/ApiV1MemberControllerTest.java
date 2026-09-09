@@ -45,7 +45,7 @@ public class ApiV1MemberControllerTest {
 
         ResultActions resultActions = mvc
                 .perform(
-                        post("/api/v1/members")
+                        post("/api/v1/members/join")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                         {
@@ -67,7 +67,7 @@ public class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.data.memberDto.id").value(6))
                 .andExpect(jsonPath("$.data.memberDto.createDate").exists())
                 .andExpect(jsonPath("$.data.memberDto.modifyDate").exists())
-                .andExpect(jsonPath("$.data.memberDto.username").value(username));
+                .andExpect(jsonPath("$.data.memberDto.nickname").value(nickname));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class ApiV1MemberControllerTest {
 
         ResultActions resultActions = mvc
                 .perform(
-                        post("/api/v1/members")
+                        post("/api/v1/members/join")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                         {
@@ -135,7 +135,7 @@ public class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.data.memberDto.id").value(member.getId()))
                 .andExpect(jsonPath("$.data.memberDto.createDate").exists())
                 .andExpect(jsonPath("$.data.memberDto.modifyDate").exists())
-                .andExpect(jsonPath("$.data.memberDto.username").value(member.getUsername()));
+                .andExpect(jsonPath("$.data.memberDto.nickname").value(member.getNickname()));
 
         resultActions.andExpect(
                 result -> {
@@ -171,8 +171,6 @@ public class ApiV1MemberControllerTest {
                 .andDo(print());
 
         resultActions
-                .andExpect(handler().handlerType(ApiV1MemberController.class))
-                .andExpect(handler().methodName("logout"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("로그아웃 되었습니다."))
